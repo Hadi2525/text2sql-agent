@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV and Excel Query Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            padding: 20px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 1.8em;
+            margin: 0 0 20px 0;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 1.2em;
+            margin: 15px 0 10px 0;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        button:disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #333;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        #results {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        pre {
+            background-color: #333;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.85em;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0 0 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+            background-color: #333;
+            font-size: 0.85em;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            color: #e0e0e0;
+            text-align: left;
+        }
+        th {
+            background-color: #444;
+        }
+        .error {
+            color: #ff4d4d;
+            text-align: center;
+            font-size: 0.9em;
+            margin: 10px 0 0 0;
+        }
+        #uploadStatus {
+            color: #28a745;
+            text-align: center;
+            font-size: 0.9em;
+            margin: 10px 0 0 0;
+        }
+        input[type="file"] {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        input[type="file"]::file-selector-button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #0056b3;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1em;
+            }
+            button, input[type="file"]::file-selector-button {
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+            textarea {
+                font-size: 0.8em;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSV and Excel Query Tool</h1>
+        
+        <div class="section">
+            <h2>Upload CSV or Excel File</h2>
+            <input type="file" id="fileInput" accept=".csv,.xlsx">
+            <div class="button-group">
+                <button id="uploadButton">Upload</button>
+            </div>
+            <p id="uploadStatus"></p>
+        </div>
+        
+        <div class="section">
+            <h2>Execute SQL Query</h2>
+            <textarea id="queryInput" placeholder="Enter your SQL query here (e.g., SELECT * FROM data_table)"></textarea>
+            <div class="button-group">
+                <button id="executeButton" disabled>Execute Query</button>
+            </div>
+            <p id="queryError" class="error"></p>
+        </div>
+        
+        <div class="section">
+            <h2>Query Results</h2>
+            <div id="results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Database Schema</h2>
+            <div class="button-group">
+                <button id="schemaButton" disabled>Get Schema</button>
+            </div>
+            <p id="schemaError" class="error"></p>
+            <pre id="schema"></pre>
+        </div>
+    </div>
+    
+    <script>
+        let uuid = null;
+        
+        function displayError(elementId, message) {
+            document.getElementById(elementId).textContent = message;
+        }
+
+        function clearErrors() {
+            document.getElementById('uploadStatus').textContent = '';
+            document.getElementById('queryError').textContent = '';
+            document.getElementById('schemaError').textContent = '';
+        }
+
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            clearErrors();
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                displayError('uploadStatus', 'Please select a CSV or Excel file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                const response = await fetch('/upload-file', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                console.log('Upload response:', data);
+                if (response.ok && data.uuid) {
+                    uuid = data.uuid;
+                    document.getElementById('uploadStatus').textContent = `File uploaded successfully. UUID: ${uuid}`;
+                    document.getElementById('executeButton').disabled = false;
+                    document.getElementById('schemaButton').disabled = false;
+                } else {
+                    displayError('uploadStatus', data.detail || 'Error uploading file');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                displayError('uploadStatus', 'Failed to upload file. Please check the server and try again.');
+            }
+        });
+        
+        document.getElementById('executeButton').addEventListener('click', async () => {
+            clearErrors();
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) {
+                displayError('queryError', 'Please enter a query');
+                return;
+            }
+            if (!uuid) {
+                displayError('queryError', 'Please upload a file first');
+                return;
+            }
+
+            const payload = { uuid, query };
+            console.log('Executing query with payload:', payload);
+            try {
+                const response = await fetch('/execute-query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                console.log('Query response:', data);
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = ''; // Clear previous results
+                if (response.ok && data.results && data.columns) {
+                    if (data.results.length > 0) {
+                        const table = document.createElement('table');
+                        // Create header row using column names
+                        const headerRow = document.createElement('tr');
+                        data.columns.forEach(column => {
+                            const th = document.createElement('th');
+                            th.textContent = column;
+                            headerRow.appendChild(th);
+                        });
+                        table.appendChild(headerRow);
+                        // Create data rows
+                        data.results.forEach(row => {
+                            const tr = document.createElement('tr');
+                            row.forEach(cell => {
+                                const td = document.createElement('td');
+                                td.textContent = cell ?? 'NULL';
+                                tr.appendChild(td);
+                            });
+                            table.appendChild(tr);
+                        });
+                        resultsDiv.appendChild(table);
+                    } else {
+                        resultsDiv.textContent = 'No results found';
+                    }
+                } else {
+                    displayError('queryError', data.detail || 'Error executing query');
+                }
+            } catch (error) {
+                console.error('Query error:', error);
+                displayError('queryError', 'Failed to execute query. Please check the server and try again.');
+            }
+        });
+        
+        document.getElementById('schemaButton').addEventListener('click', async () => {
+            clearErrors();
+            if (!uuid) {
+                displayError('schemaError', 'Please upload a file first');
+                return;
+            }
+
+            console.log('Fetching schema for UUID:', uuid);
+            try {
+                const response = await fetch(`/get-schema/${uuid}`);
+                const data = await response.json();
+                console.log('Schema response:', data);
+                if (response.ok && data.schema) {
+                    document.getElementById('schema').textContent = data.schema;
+                } else {
+                    displayError('schemaError', data.detail || 'Error getting schema');
+                }
+            } catch (error) {
+                console.error('Schema error:', error);
+                displayError('schemaError', 'Failed to get schema. Please check the server and try again.');
+            }
+        });
+    </script>
+</body>
+</html>
