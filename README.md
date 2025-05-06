@@ -173,11 +173,6 @@ The `vite.config.js` file is configured to handle the building and bundling of t
 4. View the stream of the graph state and then the generated visualization
 5. Optionally, view the query execution traces
 
-### Using the LangGraph Studio
-
-To use the Studio UI, simply input the question and the UUID of the database, which is `921c838c-541d-4361-8c96-70cb23abd9f5` for the [sample dataset](https://docs.google.com/spreadsheets/d/1S2mYAKwYYmjZW6jURiAfMWTVmwg74QQDfwdMUvVEgMk/edit?gid=1749607041#gid=1749607041). You can see UUIDs for all uploaded files in `sqlite_server/uploads`. Below is an example visualization on an uploaded dataset, with ID retrieved from `sqlite_server/uploads`.
-
-![Studio](studio.png)
 
 ## Contributing
 
