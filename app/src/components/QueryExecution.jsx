@@ -36,7 +36,7 @@ function QueryExecution({ uuid, onQueryExecuted }) {
       <h2>Execute SQL Query</h2>
       <textarea 
         ref={queryInputRef}
-        placeholder="Enter your SQL query here (e.g., SELECT * FROM data_table)"
+        placeholder="Enter your SQL query here (e.g., SELECT * FROM data)"
         disabled={isExecuting}
       />
       <div className="button-group">

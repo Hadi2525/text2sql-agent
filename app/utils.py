@@ -15,16 +15,16 @@ def convert_to_sqlite(input_file_path: str, sqlite_file_path: str, file_extensio
         if df.empty or df.columns.empty:
             raise ValueError("File is empty or missing headers")
 
-        # Clean column names to avoid SQL issues
-        columns = [str(col).replace('"', '').strip() for col in df.columns]
-        table_name = "data_table"
+        # Clean column names: remove whitespace, replace special characters, and ensure valid SQL identifiers
+        df.columns = [str(col).strip().replace(' ', '_').replace('"', '').replace("'", '') for col in df.columns]
+        table_name = "data"
 
         # Connect to SQLite
         conn = sqlite3.connect(sqlite_file_path)
         cursor = conn.cursor()
 
         # Create table with sanitized column names
-        create_table_query = f"CREATE TABLE {table_name} ({', '.join([f'\"{col}\" TEXT' for col in columns])})"
+        create_table_query = f"CREATE TABLE {table_name} ({', '.join([f'\"{col}\" TEXT' for col in df.columns])})"
         cursor.execute(create_table_query)
 
         # Insert data
