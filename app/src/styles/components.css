@@ -1,138 +1,159 @@
 .container {
-    max-width: 700px;
-    width: 100%;
-    padding: 20px;
-    background-color: var(--container-bg);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
+  background-color: var(--container-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 25px;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: var(--button-bg);
+  color: var(--text-color-bright);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+button:disabled {
+  background-color: var(--button-disabled);
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--button-hover);
+}
+
+textarea {
+  width: 100%;
+  height: 80px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 0.9em;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+#results {
+  margin-top: 10px;
+  max-height: none;
+  overflow-y: auto;
+}
+
+pre {
+  background-color: var(--input-bg);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  font-size: 0.85em;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 10px 0 0 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 10px;
+  background-color: var(--input-bg);
+  font-size: 0.85em;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 6px;
+  color: var(--text-color);
+  text-align: left;
+}
+
+th {
+  background-color: var(--border-color);
+}
+
+.error {
+  color: var(--error-color);
+  text-align: center;
+  font-size: 0.9em;
+  margin: 10px 0 0 0;
+}
+
+.status {
+  color: var(--success-color);
+  text-align: center;
+  font-size: 0.9em;
+  margin: 10px 0 0 0;
+}
+
+input[type="file"] {
+  color: var(--text-color);
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+input[type="file"]::file-selector-button {
+  background-color: var(--button-bg);
+  color: var(--text-color-bright);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: var(--button-hover);
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
   }
   
-  .section {
-    margin-bottom: 25px;
-  }
-  
-  button {
-    padding: 8px 16px;
-    background-color: var(--button-bg);
-    color: var(--text-color-bright);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-  
-  button:disabled {
-    background-color: var(--button-disabled);
-    cursor: not-allowed;
-  }
-  
-  button:hover:not(:disabled) {
-    background-color: var(--button-hover);
+  button, input[type="file"]::file-selector-button {
+    font-size: 0.8em;
+    padding: 6px 12px;
   }
   
   textarea {
-    width: 100%;
-    height: 80px;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    font-size: 0.9em;
-    resize: vertical;
-    box-sizing: border-box;
+    font-size: 0.8em;
+    height: 60px;
   }
-  
-  #results {
-    margin-top: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  pre {
-    background-color: var(--input-bg);
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    color: var(--text-color);
-    font-size: 0.85em;
-    max-height: 200px;
-    overflow-y: auto;
-    margin: 10px 0 0 0;
-  }
-  
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 10px;
-    background-color: var(--input-bg);
-    font-size: 0.85em;
-  }
-  
-  th, td {
-    border: 1px solid var(--border-color);
-    padding: 6px;
-    color: var(--text-color);
-    text-align: left;
-  }
-  
-  th {
-    background-color: var(--border-color);
-  }
-  
-  .error {
-    color: var(--error-color);
-    text-align: center;
-    font-size: 0.9em;
-    margin: 10px 0 0 0;
-  }
-  
-  .status {
-    color: var(--success-color);
-    text-align: center;
-    font-size: 0.9em;
-    margin: 10px 0 0 0;
-  }
-  
-  input[type="file"] {
-    color: var(--text-color);
-    margin-bottom: 10px;
-    font-size: 0.9em;
-  }
-  
-  input[type="file"]::file-selector-button {
-    background-color: var(--button-bg);
-    color: var(--text-color-bright);
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-  
-  input[type="file"]::file-selector-button:hover {
-    background-color: var(--button-hover);
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-start;
-  }
-  
-  @media (max-width: 600px) {
-    .container {
-      padding: 15px;
-    }
-    
-    button, input[type="file"]::file-selector-button {
-      font-size: 0.8em;
-      padding: 6px 12px;
-    }
-    
-    textarea {
-      font-size: 0.8em;
-      height: 60px;
-    }
-  }
+}
+
+/* Add or update these in components.css */
+button, textarea, input, table, pre, .status, .error {
+color: var(--text-color);
+}
+
+button {
+background-color: var(--button-bg);
+}
+
+button:hover:not(:disabled) {
+background-color: var(--button-hover);
+}
+
+.error {
+color: var(--error-color);
+}
+
+.status {
+color: var(--success-color);
+}

@@ -4,6 +4,8 @@ import FileUpload from './components/FileUpload'
 import QueryExecution from './components/QueryExecution'
 import QueryResults from './components/QueryResults'
 import DatabaseSchema from './components/DatabaseSchema'
+import SqlAgentExecution from './components/SqlAgentExecution';
+
 
 function App() {
   const [uuid, setUuid] = useState(null)
@@ -40,6 +42,10 @@ function App() {
           setSchemaError(error || '')
         }}
       />
+
+    <SqlAgentExecution 
+              uuid={uuid}
+            />
     </Container>
   )
 }

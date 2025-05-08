@@ -15,6 +15,7 @@ export default defineConfig({
       '/upload-file': 'http://localhost:8000',
       '/execute-query': 'http://localhost:8000',
       '/get-schema': 'http://localhost:8000',
+      '/run-sql-agent': 'http://localhost:8000',
     },
   },
   test: {
