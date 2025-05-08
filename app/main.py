@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import sqlite3
 import os
+import traceback
 import uuid
 import shutil
 from pathlib import Path
@@ -56,11 +57,13 @@ class QueryRequest(BaseModel):
 @app.post("/upload-file")
 async def upload_file(file: UploadFile = File(...)):
     if not file or not file.filename:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error("No file provided in upload request")
         raise HTTPException(status_code=400, detail="No file uploaded")
 
     file_extension = Path(file.filename).suffix.lower()
     if file_extension not in [".csv", ".xlsx"]:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error(f"Invalid file extension: {file_extension}")
         raise HTTPException(status_code=400, detail="Only .csv and .xlsx files are allowed")
 
@@ -84,12 +87,15 @@ async def upload_file(file: UploadFile = File(...)):
 
         return {"uuid": file_uuid}
     except ValueError as e:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error(f"Value error during file processing: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except OSError as e:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error(f"OS error during file operation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"File operation error: {str(e)}")
     except Exception as e:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error(f"Unexpected error during upload: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     finally:
@@ -109,10 +115,12 @@ async def execute_query(request: QueryRequest):
     query = request.query
 
     if not uuid or not query:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         raise HTTPException(status_code=400, detail="Missing uuid or query")
 
     db_path = UPLOAD_DIR / f"{uuid}.sqlite"
     if not db_path.exists():
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         raise HTTPException(status_code=404, detail="Database not found")
 
     conn = sqlite3.connect(db_path)
@@ -172,6 +180,7 @@ async def run_sql_agent(request: QueryRequest):
             
         }
     except Exception as e:
+        logger.error("Unhandled exception: %s", traceback.format_exc())
         logger.error(f"Error running SQL agent: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error running SQL agent: {str(e)}")
     
@@ -199,4 +208,4 @@ threading.Thread(target=run_delete_old_files, daemon=True).start()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3001)
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")
